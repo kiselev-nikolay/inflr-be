@@ -15,5 +15,4 @@ func TestWebPageReader(t *testing.T) {
 	require.NoError(err)
 	require.NotEmpty(info)
 	require.NotEmpty(info.Image.String())
-	require.Empty(info.Image.String())
 }
