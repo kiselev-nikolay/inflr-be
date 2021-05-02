@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -26,7 +25,7 @@ func makeTestServer() func(method, url, body, tok string) (int, string) {
 	um := repository.NewUserModel(&repo)
 	pw := passwords.Passworder{KeySecret: []byte("test")}
 	c := &authware.Config{
-		Key:        "test",
+		Key:        []byte("test"),
 		UserModel:  *um,
 		Passworder: pw,
 	}
@@ -110,7 +109,6 @@ func TestGetToken(t *testing.T) {
 	require.Equal("token created", message.Status)
 	require.NotEmpty(message.Token)
 
-	log.Fatal(message.Token)
 	resCode, _ = req("GET", "/test", "", message.Token)
 	require.Equal(http.StatusOK, resCode)
 }

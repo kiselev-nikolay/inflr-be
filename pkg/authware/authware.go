@@ -1,19 +1,18 @@
 package authware
 
 import (
-	"encoding/json"
-	"log"
+	"fmt"
 	"net/http"
 	"time"
 
-	"github.com/cristalhq/jwt/v3"
+	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"github.com/kiselev-nikolay/inflr-be/pkg/passwords"
 	"github.com/kiselev-nikolay/inflr-be/pkg/repository"
 )
 
 type Config struct {
-	Key        string
+	Key        []byte
 	UserModel  repository.UserModel
 	Passworder passwords.Passworder
 	traceIds   map[string]time.Time
@@ -27,7 +26,7 @@ func (c *Config) validate(t *Token) bool {
 	if !ok {
 		return false
 	}
-	if v == t.Expire {
+	if v.Equal(t.Expire) {
 		return true
 	}
 	return false
@@ -41,30 +40,16 @@ func (c *Config) saveTraceId(t *Token) {
 }
 
 type Token struct {
-	jwt.RegisteredClaims
 	Expire  time.Time       `json:"e"`
 	User    repository.User `json:"u"`
 	TraceId string          `json:"t"`
 }
 
-func getJwt(key string) (*jwt.Builder, jwt.Verifier) {
-	signer, err := jwt.NewSignerHS(jwt.HS256, []byte(key))
-	if err != nil {
-		log.Fatal(err)
-	}
-	builder := jwt.NewBuilder(signer)
-	if err != nil {
-		log.Fatal(err)
-	}
-	verifier, err := jwt.NewVerifierHS(jwt.HS256, []byte(key))
-	if err != nil {
-		log.Fatal(err)
-	}
-	return builder, verifier
+func (t *Token) Valid() error {
+	return nil
 }
 
 func NewAuthware(c *Config) gin.HandlerFunc {
-	_, verifier := getJwt(c.Key)
 	return func(g *gin.Context) {
 		tokenVerification := g.GetHeader("X-Token-Verification")
 		if tokenVerification == "" {
@@ -72,16 +57,19 @@ func NewAuthware(c *Config) gin.HandlerFunc {
 			return
 		}
 
-		token, err := jwt.ParseAndVerifyString(tokenVerification, verifier)
+		token, err := jwt.ParseWithClaims(tokenVerification, &Token{}, func(token *jwt.Token) (interface{}, error) {
+			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+				return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
+			}
+			return c.Key, nil
+		})
+
 		if err != nil {
-			log.Println(err)
 			g.Next()
 			return
 		}
-
-		tokenValue := &Token{}
-		err = json.Unmarshal(token.RawClaims(), tokenValue)
-		if err != nil {
+		tokenValue, ok := token.Claims.(*Token)
+		if !ok || !token.Valid {
 			g.Next()
 			return
 		}
@@ -90,7 +78,7 @@ func NewAuthware(c *Config) gin.HandlerFunc {
 			g.Next()
 			return
 		}
-		g.Set("authware:UserToken", tokenValue)
+		g.Set("authware:UserToken", *tokenValue)
 		g.Next()
 	}
 }
@@ -110,7 +98,6 @@ type UserAuthBody struct {
 }
 
 func NewTokenHandler(c *Config) gin.HandlerFunc {
-	builder, _ := getJwt(c.Key)
 	return func(g *gin.Context) {
 		if GetUserFromContext(g) == nil {
 			body := &UserAuthBody{}
@@ -142,7 +129,10 @@ func NewTokenHandler(c *Config) gin.HandlerFunc {
 			}
 			traceId, err := c.Passworder.Hash(user.Login)
 			if err != nil {
-				log.Printf("user login is unhashable: %v\n", err)
+				g.JSON(http.StatusInternalServerError, gin.H{
+					"status": "cannot do verification",
+				})
+				return
 			}
 			expire := time.Now().Add(1 * time.Hour)
 			tokenValue := &Token{
@@ -151,14 +141,17 @@ func NewTokenHandler(c *Config) gin.HandlerFunc {
 				TraceId: string(traceId),
 			}
 			c.saveTraceId(tokenValue)
-			newToken, err := builder.Build(tokenValue)
+
+			token := jwt.NewWithClaims(jwt.SigningMethodHS256, tokenValue)
+
+			tokenString, err := token.SignedString(c.Key)
 			if err != nil {
-				g.JSON(http.StatusBadRequest, gin.H{
-					"status": "cannot create token",
+				g.JSON(http.StatusInternalServerError, gin.H{
+					"status": "cannot make token",
 				})
 				return
 			}
-			tokenString := newToken.String()
+
 			g.JSON(http.StatusOK, gin.H{
 				"status": "token created",
 				"token":  tokenString,
