@@ -44,7 +44,7 @@ func GetApp(mode int) *fiber.App {
 			Duration: 5 * time.Second,
 		}))
 	}
-	app.Use(authware.New(&authware.Config{
+	app.Use(authware.NewAuthware(&authware.Config{
 		Key: []byte("Kh4Hy=bKRZ^fkq!RE7P8cBx=KLAb#nU^4Es$7srGHdH8@g79q2"),
 	}))
 	return app

@@ -21,7 +21,7 @@ func NewUserModel(repo Repo) *UserModel {
 	collection := "User"
 	model := &UserModel{}
 	model.Send = func(k string, v *User) error {
-		return repo.Send(collection, &repository_adapters.Item{Key: k, Value: v})
+		return repo.Send(collection, &repository_adapters.Item{Key: k, Value: *v})
 	}
 	model.Find = func(k string) (*User, error) {
 		i := repository_adapters.Item{Key: k}

@@ -16,7 +16,7 @@ func TestPassworder(t *testing.T) {
 	}
 	_, err := pw.Hash("123")
 	require.Error(err)
-	require.Equal(err, passwords.ErrTooShort)
+	require.Equal(passwords.ErrTooShort, err)
 
 	h, err := pw.Hash("meow")
 	require.NoError(err)
