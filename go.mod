@@ -4,6 +4,7 @@ go 1.16
 
 require (
 	cloud.google.com/go/firestore v1.5.0
+	github.com/PuerkitoBio/goquery v1.6.1
 	github.com/andybalholm/brotli v1.0.2 // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/form3tech-oss/jwt-go v3.2.2+incompatible
