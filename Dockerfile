@@ -1,8 +1,10 @@
 FROM golang:1.16 AS backend_builder
 WORKDIR /build
-COPY ./pkg/ ./pkg
-COPY ./go.mod ./
-COPY ./go.sum ./
+COPY ./go.mod /build
+COPY ./go.sum /build
+RUN go mod download
+COPY ./pkg /build/pkg
+COPY ./main.go /build
 RUN go build ./main.go
 
 FROM golang:1.16 AS backend
