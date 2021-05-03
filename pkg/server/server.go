@@ -1,15 +1,13 @@
-package auth
+package server
 
 import (
-	"time"
+	"net/http"
 
-	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/cache"
-	"github.com/gofiber/fiber/v2/middleware/compress"
-	"github.com/gofiber/fiber/v2/middleware/cors"
-	"github.com/gofiber/fiber/v2/middleware/limiter"
-	"github.com/gofiber/fiber/v2/middleware/recover"
+	"github.com/gin-gonic/gin"
 	"github.com/kiselev-nikolay/inflr-be/pkg/authware"
+	"github.com/kiselev-nikolay/inflr-be/pkg/passwords"
+	"github.com/kiselev-nikolay/inflr-be/pkg/repository"
+	"github.com/kiselev-nikolay/inflr-be/pkg/repository_adapters/memorystore"
 )
 
 const (
@@ -17,35 +15,40 @@ const (
 	ModeProduction = iota
 )
 
-func GetApp(mode int) *fiber.App {
-	app := fiber.New()
+const key = "Kh4Hy=bKRZ^fkq!RE7P8cBx=KLAb#nU^4Es$7srGHdH8@g79q2"
 
+func GetRouter(mode int) *gin.Engine {
 	switch mode {
 	case ModeDev:
-		app.Use(recover.New(recover.Config{
-			EnableStackTrace: true,
-		}))
+		gin.SetMode(gin.DebugMode)
 	case ModeProduction:
-		app.Use(compress.New(compress.Config{
-			Level: compress.LevelBestCompression,
-		}))
-		app.Use(cache.New(cache.Config{
-			Next: func(c *fiber.Ctx) bool {
-				return c.Query("refresh") == "true"
-			},
-			Expiration:   2 * time.Minute,
-			CacheControl: true,
-		}))
-		app.Use(cors.New(cors.Config{
-			AllowOrigins: "https://inflr.app",
-		}))
-		app.Use(limiter.New(limiter.Config{
-			Max:      10,
-			Duration: 5 * time.Second,
-		}))
+		gin.SetMode(gin.ReleaseMode)
 	}
-	app.Use(authware.NewAuthware(&authware.Config{
-		Key: []byte("Kh4Hy=bKRZ^fkq!RE7P8cBx=KLAb#nU^4Es$7srGHdH8@g79q2"),
-	}))
-	return app
+	router := gin.New()
+
+	repo := memorystore.MemoryStoreRepo{}
+	repo.Connect()
+
+	um := repository.NewUserModel(&repo)
+
+	pw := passwords.Passworder{KeySecret: []byte(key)}
+
+	c := &authware.Config{
+		Key:        []byte(key),
+		UserModel:  *um,
+		Passworder: pw,
+	}
+	router.Use(authware.NewAuthware(c))
+	router.POST("/token", authware.NewTokenHandler(c))
+	router.POST("/register", authware.NewRegisterHandler(c))
+	router.GET("/test", func(g *gin.Context) {
+		u := authware.GetUserFromContext(g)
+		if u == nil {
+			g.Status(http.StatusUnauthorized)
+			return
+		}
+		g.Status(http.StatusOK)
+	})
+
+	return router
 }
