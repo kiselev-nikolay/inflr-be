@@ -13,6 +13,8 @@ func TestWebPageReader(t *testing.T) {
 	b, _ := os.Open("./test/page.html")
 	info, err := telegram.ReadWebPage(b)
 	require.NoError(err)
-	require.NotEmpty(info)
-	require.NotEmpty(info.Image.String())
+	require.Equal("Тёмная сторона", info.Title)
+	require.Equal("Аркадий Морейнис @amoreynis https://www.instagram.com/temnografika/", info.Description)
+	require.NotEmpty(info.ImageURL)
+	require.EqualValues(84275, info.Subs)
 }
