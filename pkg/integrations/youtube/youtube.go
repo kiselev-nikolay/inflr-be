@@ -74,7 +74,14 @@ func GetInfo(ytid string) (*YoutubeInfo, error) {
 	if err != nil {
 		return nil, err
 	}
-	return ReadYTResponse(res.Body)
+	info, err := ReadYTResponse(res.Body)
+	if err != nil {
+		return nil, err
+	}
+	if (YoutubeInfo{}) == *info {
+		return nil, errors.New("info is empty")
+	}
+	return info, nil
 }
 
 func ReadYTResponse(ytResponse io.Reader) (*YoutubeInfo, error) {
