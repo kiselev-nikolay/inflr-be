@@ -1,17 +1,20 @@
 - [x] telegram
 - [x] youtube
 - [x] tiktok
-- [ ] twitch
 
 - [ ] medium
 - [ ] pinterest
-- [ ] instagram
-- [ ] vk
 - [ ] habr
+
+- [ ] vk
+- [ ] instagram
 - [ ] twitter
+
+- [ ] twitch
 - [ ] discord
+
 - [ ] yandex dzen
-- [ ] reddit
 - [ ] facebook
 - [ ] whatsapp
+- [ ] reddit
 - [ ] pikaboo
