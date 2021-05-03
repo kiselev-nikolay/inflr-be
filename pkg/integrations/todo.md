@@ -1,7 +1,8 @@
 - [x] telegram
 - [x] youtube
-- [ ] tiktok
+- [x] tiktok
 - [ ] twitch
+
 - [ ] medium
 - [ ] pinterest
 - [ ] instagram
