@@ -18,4 +18,5 @@ FROM scratch AS backend
 WORKDIR /srv/app
 COPY --from=backend_tester /tmp/ok /tmp/ok
 COPY --from=backend_builder /build/main /srv/app
-CMD /srv/app/main
+ENTRYPOINT ["/srv/app/main"]
+CMD ["/srv/app/main"]
