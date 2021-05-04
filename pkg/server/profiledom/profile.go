@@ -12,5 +12,6 @@ func Connect(router *gin.Engine, prefix string, repo repository.Repo) {
 	view := profile.NewView(model)
 
 	router.POST(prefix+"/new", ctrl.New)
+	router.POST(prefix+"/add-yt", ctrl.AddYoutube)
 	router.GET(prefix+"/get", view.Get)
 }

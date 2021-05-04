@@ -21,7 +21,7 @@ func Connect(router *gin.Engine, prefix string, repo repository.Repo, key string
 	router.Use(authware.NewAuthware(c))
 
 	router.POST(prefix+"/token", authware.NewTokenHandler(c))
-	router.POST(prefix+"/register", authware.NewRegisterHandler(c))
+	router.POST(prefix+"/new", authware.NewRegisterHandler(c))
 	router.GET(prefix+"/test", testHandler)
 }
 
