@@ -18,6 +18,7 @@ type pageInfo struct {
 }
 
 type statistics struct {
+	hidden          bool   `json:"hiddenSubscriberCount"`
 	ViewCount       string `json:"viewCount"`
 	SubscriberCount string `json:"subscriberCount"`
 	VideoCount      string `json:"videoCount"`
@@ -65,6 +66,7 @@ func GetInfo(ytid string) (*YoutubeInfo, error) {
 	yourKey := "AIzaSyBQQ-zTp3e4o0GkJEbnnmH35hTMOSxsW_E"
 	q := "key=" + yourKey
 	q += "&part=statistics&part=snippet"
+	println(len(ytid))
 	if !(strings.HasPrefix(ytid, "UC") && len(ytid) == 24) {
 		return nil, errors.New("invalid ytid")
 	}
@@ -94,9 +96,12 @@ func ReadYTResponse(ytResponse io.Reader) (*YoutubeInfo, error) {
 	if err != nil {
 		return nil, err
 	}
-	subs, err := strconv.ParseUint(data.Items[0].Statistics.SubscriberCount, 10, 64)
-	if err != nil {
-		return nil, err
+	var subs uint64 = 0
+	if !data.Items[0].Statistics.hidden {
+		subs, err = strconv.ParseUint(data.Items[0].Statistics.SubscriberCount, 10, 64)
+		if err != nil {
+			return nil, err
+		}
 	}
 	views, err := strconv.ParseUint(data.Items[0].Statistics.ViewCount, 10, 64)
 	if err != nil {
