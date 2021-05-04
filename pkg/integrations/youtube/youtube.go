@@ -52,13 +52,13 @@ type response struct {
 }
 
 type YoutubeInfo struct {
-	Title       string
-	Description string
-	Register    time.Time
-	ImageURL    string
-	Subs        uint64
-	Views       uint64
-	Videos      uint64
+	Title       string    `json:"title"`
+	Description string    `json:"description"`
+	Register    time.Time `json:"register"`
+	ImageURL    string    `json:"imageUrl"`
+	Subs        uint64    `json:"subs"`
+	Views       uint64    `json:"views"`
+	Videos      uint64    `json:"videos"`
 }
 
 func GetInfo(ytid string) (*YoutubeInfo, error) {

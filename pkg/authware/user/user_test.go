@@ -3,7 +3,7 @@ package user_test
 import (
 	"testing"
 
-	"github.com/kiselev-nikolay/inflr-be/pkg/api/models/user"
+	"github.com/kiselev-nikolay/inflr-be/pkg/authware/user"
 	"github.com/kiselev-nikolay/inflr-be/pkg/repository/memorystore"
 	"github.com/stretchr/testify/require"
 )

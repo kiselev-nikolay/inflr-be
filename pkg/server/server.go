@@ -1,13 +1,10 @@
 package server
 
 import (
-	"net/http"
-
 	"github.com/gin-gonic/gin"
-	"github.com/kiselev-nikolay/inflr-be/pkg/api/models/user"
-	"github.com/kiselev-nikolay/inflr-be/pkg/authware"
-	"github.com/kiselev-nikolay/inflr-be/pkg/passwords"
 	"github.com/kiselev-nikolay/inflr-be/pkg/repository/memorystore"
+	"github.com/kiselev-nikolay/inflr-be/pkg/server/authdom"
+	"github.com/kiselev-nikolay/inflr-be/pkg/server/profiledom"
 )
 
 const (
@@ -26,29 +23,12 @@ func GetRouter(mode int) *gin.Engine {
 	}
 	router := gin.New()
 
-	repo := memorystore.MemoryStoreRepo{}
+	repo := &memorystore.MemoryStoreRepo{}
 	repo.Connect()
 
-	um := user.NewUserModel(&repo)
-
-	pw := passwords.Passworder{KeySecret: []byte(key)}
-
-	c := &authware.Config{
-		Key:        []byte(key),
-		UserModel:  *um,
-		Passworder: pw,
-	}
-	router.Use(authware.NewAuthware(c))
-	router.POST("/token", authware.NewTokenHandler(c))
-	router.POST("/register", authware.NewRegisterHandler(c))
-	router.GET("/test", func(g *gin.Context) {
-		u := authware.GetUserFromContext(g)
-		if u == nil {
-			g.Status(http.StatusUnauthorized)
-			return
-		}
-		g.Status(http.StatusOK)
-	})
+	reactNativePrefix := "/rnai"
+	authdom.Connect(router, reactNativePrefix+"/auth", repo, key)
+	profiledom.Connect(router, reactNativePrefix+"/profile", repo)
 
 	return router
 }

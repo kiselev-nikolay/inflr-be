@@ -10,8 +10,8 @@ import (
 	"testing"
 
 	"github.com/gin-gonic/gin"
-	"github.com/kiselev-nikolay/inflr-be/pkg/api/models/user"
 	"github.com/kiselev-nikolay/inflr-be/pkg/authware"
+	"github.com/kiselev-nikolay/inflr-be/pkg/authware/user"
 	"github.com/kiselev-nikolay/inflr-be/pkg/passwords"
 	"github.com/kiselev-nikolay/inflr-be/pkg/repository/memorystore"
 	"github.com/stretchr/testify/require"

@@ -17,10 +17,10 @@ const htmlSubsSelector = ".tgme_page_extra"
 const htmlImageSelector = ".tgme_page_photo_image"
 
 type TelegramInfo struct {
-	Title       string
-	Description string
-	ImageURL    string
-	Subs        uint64
+	Title       string `json:"title"`
+	Description string `json:"description"`
+	ImageURL    string `json:"imageUrl"`
+	Subs        uint64 `json:"subs"`
 }
 
 func GetInfo(address string) (*TelegramInfo, error) {

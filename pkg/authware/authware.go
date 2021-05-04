@@ -7,7 +7,7 @@ import (
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
-	"github.com/kiselev-nikolay/inflr-be/pkg/api/models/user"
+	"github.com/kiselev-nikolay/inflr-be/pkg/authware/user"
 	"github.com/kiselev-nikolay/inflr-be/pkg/passwords"
 )
 
@@ -81,6 +81,15 @@ func NewAuthware(c *Config) gin.HandlerFunc {
 		g.Set("authware:UserToken", *tokenValue)
 		g.Next()
 	}
+}
+
+func RequiredLoginPassed(g *gin.Context) bool {
+	_, exists := g.Get("authware:UserToken")
+	if !exists {
+		g.Status(http.StatusUnauthorized)
+		return false
+	}
+	return true
 }
 
 func GetUserFromContext(g *gin.Context) *user.User {
@@ -160,7 +169,7 @@ func NewTokenHandler(c *Config) gin.HandlerFunc {
 			return
 		}
 		g.JSON(http.StatusOK, gin.H{
-			"status": "you got already valid token",
+			"status": "already valid token",
 		})
 	}
 }

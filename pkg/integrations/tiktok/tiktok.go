@@ -12,10 +12,10 @@ import (
 )
 
 type TiktokInfo struct {
-	Name  string
-	Login string
-	Likes uint64
-	Subs  uint64
+	Name  string `json:"name"`
+	Login string `json:"login"`
+	Likes uint64 `json:"likes"`
+	Subs  uint64 `json:"subs"`
 }
 
 func GetInfo(login string) (*TiktokInfo, error) {

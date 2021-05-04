@@ -7,7 +7,6 @@ import (
 
 type User struct {
 	Login          string
-	ProfileKey     string
 	SecretPassword []byte
 }
 
