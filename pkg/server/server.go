@@ -4,10 +4,10 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/kiselev-nikolay/inflr-be/pkg/api/models/user"
 	"github.com/kiselev-nikolay/inflr-be/pkg/authware"
 	"github.com/kiselev-nikolay/inflr-be/pkg/passwords"
-	"github.com/kiselev-nikolay/inflr-be/pkg/repository"
-	"github.com/kiselev-nikolay/inflr-be/pkg/repository_adapters/memorystore"
+	"github.com/kiselev-nikolay/inflr-be/pkg/repository/memorystore"
 )
 
 const (
@@ -29,7 +29,7 @@ func GetRouter(mode int) *gin.Engine {
 	repo := memorystore.MemoryStoreRepo{}
 	repo.Connect()
 
-	um := repository.NewUserModel(&repo)
+	um := user.NewUserModel(&repo)
 
 	pw := passwords.Passworder{KeySecret: []byte(key)}
 

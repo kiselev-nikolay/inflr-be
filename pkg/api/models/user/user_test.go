@@ -1,10 +1,10 @@
-package repository_test
+package user_test
 
 import (
 	"testing"
 
-	"github.com/kiselev-nikolay/inflr-be/pkg/repository"
-	"github.com/kiselev-nikolay/inflr-be/pkg/repository_adapters/memorystore"
+	"github.com/kiselev-nikolay/inflr-be/pkg/api/models/user"
+	"github.com/kiselev-nikolay/inflr-be/pkg/repository/memorystore"
 	"github.com/stretchr/testify/require"
 )
 
@@ -12,9 +12,9 @@ func TestUserModel(t *testing.T) {
 	require := require.New(t)
 	repo := memorystore.MemoryStoreRepo{}
 	repo.Connect()
-	um := repository.NewUserModel(&repo)
+	um := user.NewUserModel(&repo)
 
-	err := um.Send("test", &repository.User{
+	err := um.Send("test", &user.User{
 		Login: "test",
 	})
 	require.NoError(err)

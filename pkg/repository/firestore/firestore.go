@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/firestore"
-	"github.com/kiselev-nikolay/inflr-be/pkg/repository_adapters"
+	irepository "github.com/kiselev-nikolay/inflr-be/pkg/repository/interfaces"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -15,7 +15,7 @@ import (
 
 type FireStoreRepo struct {
 	firestoreClient *firestore.Client
-	caches          map[string]map[string]repository_adapters.Item
+	caches          map[string]map[string]irepository.Item
 	mutex           sync.Mutex
 	cancelChannel   chan struct{}
 }
@@ -30,7 +30,7 @@ func (fs *FireStoreRepo) Connect(conf FireStoreRepoConf) error {
 	if err != nil {
 		return err
 	}
-	fs.caches = make(map[string]map[string]repository_adapters.Item)
+	fs.caches = make(map[string]map[string]irepository.Item)
 	fs.firestoreClient = client
 	return nil
 }
@@ -38,7 +38,7 @@ func (fs *FireStoreRepo) Connect(conf FireStoreRepoConf) error {
 func (fs *FireStoreRepo) ResetCache() {
 	fs.mutex.Lock()
 	defer fs.mutex.Unlock()
-	fs.caches = make(map[string]map[string]repository_adapters.Item)
+	fs.caches = make(map[string]map[string]irepository.Item)
 }
 
 func (fs *FireStoreRepo) Quit() {
@@ -46,7 +46,7 @@ func (fs *FireStoreRepo) Quit() {
 	close(fs.cancelChannel)
 }
 
-func (fs *FireStoreRepo) Send(collection string, item *repository_adapters.Item) error {
+func (fs *FireStoreRepo) Send(collection string, item *irepository.Item) error {
 	docRef := fs.firestoreClient.Collection(collection).Doc(item.Key)
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
 	defer cancel()
@@ -57,7 +57,7 @@ func (fs *FireStoreRepo) Send(collection string, item *repository_adapters.Item)
 	fs.mutex.Lock()
 	col, ok := fs.caches[collection]
 	if !ok {
-		col = make(map[string]repository_adapters.Item)
+		col = make(map[string]irepository.Item)
 		fs.caches[collection] = col
 	}
 	col[item.Key] = *item
@@ -65,11 +65,11 @@ func (fs *FireStoreRepo) Send(collection string, item *repository_adapters.Item)
 	return nil
 }
 
-func (fs *FireStoreRepo) Find(collection string, item *repository_adapters.Item) error {
+func (fs *FireStoreRepo) Find(collection string, item *irepository.Item) error {
 	fs.mutex.Lock()
 	col, ok := fs.caches[collection]
 	if !ok {
-		col = make(map[string]repository_adapters.Item)
+		col = make(map[string]irepository.Item)
 		fs.caches[collection] = col
 	}
 	cachedValue, ok := col[item.Key]
@@ -95,7 +95,7 @@ func (fs *FireStoreRepo) Find(collection string, item *repository_adapters.Item)
 	return nil
 }
 
-func (fs *FireStoreRepo) Delete(collection string, item *repository_adapters.Item) error {
+func (fs *FireStoreRepo) Delete(collection string, item *irepository.Item) error {
 	docRef := fs.firestoreClient.Collection(collection).Doc(item.Key)
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
 	defer cancel()
@@ -106,7 +106,7 @@ func (fs *FireStoreRepo) Delete(collection string, item *repository_adapters.Ite
 	fs.mutex.Lock()
 	col, ok := fs.caches[collection]
 	if !ok {
-		col = make(map[string]repository_adapters.Item)
+		col = make(map[string]irepository.Item)
 		fs.caches[collection] = col
 	}
 	delete(col, item.Key)
@@ -114,8 +114,8 @@ func (fs *FireStoreRepo) Delete(collection string, item *repository_adapters.Ite
 	return nil
 }
 
-func (fs *FireStoreRepo) List(collection string) ([]*repository_adapters.Item, error) {
-	items := make([]*repository_adapters.Item, 0)
+func (fs *FireStoreRepo) List(collection string) ([]*irepository.Item, error) {
+	items := make([]*irepository.Item, 0)
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
 	defer cancel()
 	documentIterator := fs.firestoreClient.Collection(collection).Documents(ctx)
@@ -124,7 +124,7 @@ func (fs *FireStoreRepo) List(collection string) ([]*repository_adapters.Item, e
 		return nil, err
 	}
 	for _, document := range documents {
-		item := &repository_adapters.Item{}
+		item := &irepository.Item{}
 		err := document.DataTo(item)
 		if err != nil {
 			log.Println("Broken node:", document.Ref.Path)

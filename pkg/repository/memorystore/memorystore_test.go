@@ -3,8 +3,9 @@ package memorystore_test
 import (
 	"testing"
 
-	"github.com/kiselev-nikolay/inflr-be/pkg/repository_adapters"
-	"github.com/kiselev-nikolay/inflr-be/pkg/repository_adapters/memorystore"
+	irepository "github.com/kiselev-nikolay/inflr-be/pkg/repository/interfaces"
+
+	"github.com/kiselev-nikolay/inflr-be/pkg/repository/memorystore"
 	"github.com/stretchr/testify/require"
 )
 
@@ -12,12 +13,12 @@ func TestMemstorage(t *testing.T) {
 	require := require.New(t)
 	repo := memorystore.MemoryStoreRepo{}
 	repo.Connect()
-	sentItem := &repository_adapters.Item{
+	sentItem := &irepository.Item{
 		Key:   "1",
 		Value: "hello",
 	}
 	repo.Send("test", sentItem)
-	foundItem := &repository_adapters.Item{
+	foundItem := &irepository.Item{
 		Key: "1",
 	}
 	repo.Find("test", foundItem)
@@ -27,7 +28,7 @@ func TestMemstorage(t *testing.T) {
 	testItems, _ := repo.List("test")
 	require.Len(testItems, 1)
 
-	anotherSentItem := &repository_adapters.Item{
+	anotherSentItem := &irepository.Item{
 		Key:   "2",
 		Value: "hello",
 	}

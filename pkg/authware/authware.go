@@ -7,13 +7,13 @@ import (
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
+	"github.com/kiselev-nikolay/inflr-be/pkg/api/models/user"
 	"github.com/kiselev-nikolay/inflr-be/pkg/passwords"
-	"github.com/kiselev-nikolay/inflr-be/pkg/repository"
 )
 
 type Config struct {
 	Key        []byte
-	UserModel  repository.UserModel
+	UserModel  user.UserModel
 	Passworder passwords.Passworder
 	traceIds   map[string]time.Time
 }
@@ -40,9 +40,9 @@ func (c *Config) saveTraceId(t *Token) {
 }
 
 type Token struct {
-	Expire  time.Time       `json:"e"`
-	User    repository.User `json:"u"`
-	TraceId string          `json:"t"`
+	Expire  time.Time `json:"e"`
+	User    user.User `json:"u"`
+	TraceId string    `json:"t"`
 }
 
 func (t *Token) Valid() error {
@@ -83,7 +83,7 @@ func NewAuthware(c *Config) gin.HandlerFunc {
 	}
 }
 
-func GetUserFromContext(g *gin.Context) *repository.User {
+func GetUserFromContext(g *gin.Context) *user.User {
 	value, exists := g.Get("authware:UserToken")
 	if !exists {
 		return nil
@@ -181,7 +181,7 @@ func NewRegisterHandler(c *Config) gin.HandlerFunc {
 			})
 			return
 		}
-		user := repository.User{
+		user := user.User{
 			Login: body.UserKey,
 		}
 		hash, err := c.Passworder.Hash(body.UserPassword)

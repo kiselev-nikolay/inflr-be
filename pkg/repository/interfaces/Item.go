@@ -1,4 +1,4 @@
-package repository_adapters
+package interfaces
 
 type Item struct {
 	Key   string

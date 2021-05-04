@@ -1,7 +1,8 @@
-package repository
+package user
 
 import (
-	"github.com/kiselev-nikolay/inflr-be/pkg/repository_adapters"
+	"github.com/kiselev-nikolay/inflr-be/pkg/repository"
+	irepository "github.com/kiselev-nikolay/inflr-be/pkg/repository/interfaces"
 )
 
 type User struct {
@@ -17,14 +18,14 @@ type UserModel struct {
 	List   func() ([]*User, error)
 }
 
-func NewUserModel(repo Repo) *UserModel {
+func NewUserModel(repo repository.Repo) *UserModel {
 	collection := "User"
 	model := &UserModel{}
 	model.Send = func(k string, v *User) error {
-		return repo.Send(collection, &repository_adapters.Item{Key: k, Value: *v})
+		return repo.Send(collection, &irepository.Item{Key: k, Value: *v})
 	}
 	model.Find = func(k string) (*User, error) {
-		i := repository_adapters.Item{Key: k}
+		i := irepository.Item{Key: k}
 		err := repo.Find(collection, &i)
 		if err != nil {
 			return nil, err
@@ -33,7 +34,7 @@ func NewUserModel(repo Repo) *UserModel {
 		return &v, nil
 	}
 	model.Delete = func(k string) error {
-		return repo.Delete(collection, &repository_adapters.Item{Key: k})
+		return repo.Delete(collection, &irepository.Item{Key: k})
 	}
 	model.List = func() ([]*User, error) {
 		items, err := repo.List(collection)
