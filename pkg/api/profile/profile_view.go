@@ -20,14 +20,14 @@ func NewView(model *Model) *View {
 }
 
 type ProfileRes struct {
-	Name         string                  `json:"name"`
-	About        string                  `json:"about"`
-	Availability int                     `json:"availability"`
-	Country      string                  `json:"country"`
-	Links        []string                `json:"links"`
-	Telegram     []telegram.TelegramInfo `json:"telegram"`
-	Tiktok       []tiktok.TiktokInfo     `json:"tiktok"`
-	Youtube      []youtube.YoutubeInfo   `json:"youtube"`
+	Name         string                           `json:"name"`
+	About        string                           `json:"about"`
+	Availability int                              `json:"availability"`
+	Country      string                           `json:"country"`
+	Links        []string                         `json:"links"`
+	Telegram     map[string]telegram.TelegramInfo `json:"telegram"`
+	Tiktok       map[string]tiktok.TiktokInfo     `json:"tiktok"`
+	Youtube      map[string]youtube.YoutubeInfo   `json:"youtube"`
 }
 
 func (ctrl *View) Get(g *gin.Context) {

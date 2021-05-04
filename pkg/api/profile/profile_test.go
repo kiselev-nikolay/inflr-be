@@ -68,5 +68,5 @@ func TestCtrlAddYoutube(t *testing.T) {
 
 	code, res = testplayer.TestGet("/view/get")
 	assert.Equal(http.StatusOK, code)
-	assert.Equal(`{"profile":{"name":"Hello","about":"","availability":0,"country":"","links":[],"telegram":null,"tiktok":null,"youtube":[{"title":"PewDiePie","description":"I make videos.","register":"2010-04-29T10:54:00Z","imageUrl":"https://yt3.ggpht.com/ytc/AAUvwnga3eXKkQgGU-3j1_jccZ0K9m6MbjepV0ksd7eBEw=s800-c-k-c0x00ffffff-no-rj","subs":110000000,"views":27225286026,"videos":4318}]},"status":"found"}`, res)
+	assert.Equal(`{"profile":{"name":"Hello","about":"","availability":0,"country":"","links":[],"telegram":null,"tiktok":null,"youtube":{"UC-lHJZR3Gqxm24_Vd_AJ5Yw":{"title":"PewDiePie","description":"I make videos.","register":"2010-04-29T10:54:00Z","imageUrl":"https://yt3.ggpht.com/ytc/AAUvwnga3eXKkQgGU-3j1_jccZ0K9m6MbjepV0ksd7eBEw=s800-c-k-c0x00ffffff-no-rj","subs":110000000,"views":27225286026,"videos":4318}}},"status":"found"}`, res)
 }

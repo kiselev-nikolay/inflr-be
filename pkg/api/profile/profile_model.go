@@ -24,9 +24,9 @@ type Bio struct {
 	Country      Country
 }
 type Projects struct {
-	Youtube  []youtube.YoutubeInfo
-	Telegram []telegram.TelegramInfo
-	Tiktok   []tiktok.TiktokInfo
+	Youtube  map[string]youtube.YoutubeInfo
+	Telegram map[string]telegram.TelegramInfo
+	Tiktok   map[string]tiktok.TiktokInfo
 }
 
 type Profile struct {

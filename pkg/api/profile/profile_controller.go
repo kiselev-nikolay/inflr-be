@@ -88,9 +88,10 @@ func (ctrl *Controller) AddYoutube(g *gin.Context) {
 		return
 	}
 	if p.Youtube == nil {
-		p.Youtube = []youtube.YoutubeInfo{*ytInfo}
+		p.Youtube = make(map[string]youtube.YoutubeInfo, 1)
+		p.Youtube[ytid] = *ytInfo
 	} else {
-		p.Youtube = append(p.Youtube, *ytInfo)
+		p.Youtube[ytid] = *ytInfo
 	}
 
 	err = ctrl.Model.Send(u.Login, p)
