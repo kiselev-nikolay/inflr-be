@@ -1,6 +1,7 @@
 package models
 
 import (
+	"github.com/kiselev-nikolay/inflr-be/pkg/authware/user"
 	"github.com/kiselev-nikolay/inflr-be/pkg/repository"
 	irepository "github.com/kiselev-nikolay/inflr-be/pkg/repository/interfaces"
 )
@@ -10,46 +11,47 @@ type Card struct {
 }
 
 type Landing struct {
+	Key   string
 	Title string
 	Cards []Card
 }
 
 type Model struct {
-	Send   func(string, *Landing) error
-	Find   func(string) (*Landing, error)
-	Delete func(string) error
-	List   func() ([]*Landing, error)
+	Send   func(*user.User, string, *Landing) error
+	Find   func(*user.User, string) (*Landing, error)
+	Delete func(*user.User, string) error
+	List   func(*user.User) ([]*Landing, error)
 }
 
 func New(repo repository.Repo) *Model {
 	collection := "Landing"
 	model := &Model{}
-	model.Send = func(k string, v *Landing) error {
-		return repo.Send(collection, &irepository.Item{Key: k, Value: *v})
+	model.Send = func(u *user.User, k string, v *Landing) error {
+		return repo.Send(collection+":"+u.Login, &irepository.Item{Key: k, Value: *v})
 	}
-	model.Find = func(k string) (*Landing, error) {
+	model.Find = func(u *user.User, k string) (*Landing, error) {
 		i := irepository.Item{Key: k}
-		err := repo.Find(collection, &i)
+		err := repo.Find(collection+":"+u.Login, &i)
 		if err != nil {
 			return nil, err
 		}
 		v := i.Value.(Landing)
 		return &v, nil
 	}
-	model.Delete = func(k string) error {
-		return repo.Delete(collection, &irepository.Item{Key: k})
+	model.Delete = func(u *user.User, k string) error {
+		return repo.Delete(collection+":"+u.Login, &irepository.Item{Key: k})
 	}
-	model.List = func() ([]*Landing, error) {
-		items, err := repo.List(collection)
+	model.List = func(u *user.User) ([]*Landing, error) {
+		items, err := repo.List(collection + ":" + u.Login)
 		if err != nil {
 			return nil, err
 		}
-		profiles := make([]*Landing, 0)
+		landings := make([]*Landing, 0)
 		for _, item := range items {
-			profile := item.Value.(Landing)
-			profiles = append(profiles, &profile)
+			landing := item.Value.(Landing)
+			landings = append(landings, &landing)
 		}
-		return profiles, nil
+		return landings, nil
 	}
 	return model
 }

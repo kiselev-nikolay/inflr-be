@@ -2,6 +2,7 @@ package server
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/kiselev-nikolay/inflr-be/pkg/api/landing"
 	"github.com/kiselev-nikolay/inflr-be/pkg/api/profile"
 	"github.com/kiselev-nikolay/inflr-be/pkg/authware"
 	"github.com/kiselev-nikolay/inflr-be/pkg/repository/memorystore"
@@ -29,6 +30,7 @@ func GetRouter(mode int) *gin.Engine {
 	reactNativePrefix := "/rnai"
 	authware.Connect(router, reactNativePrefix+"/auth", repo, key)
 	profile.Connect(router, reactNativePrefix+"/profile", repo)
+	landing.Connect(router, reactNativePrefix+"/landing", repo)
 
 	return router
 }

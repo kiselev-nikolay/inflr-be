@@ -41,7 +41,6 @@ type Model struct {
 	Send   func(string, *Profile) error
 	Find   func(string) (*Profile, error)
 	Delete func(string) error
-	List   func() ([]*Profile, error)
 }
 
 func New(repo repository.Repo) *Model {
@@ -61,18 +60,6 @@ func New(repo repository.Repo) *Model {
 	}
 	model.Delete = func(k string) error {
 		return repo.Delete(collection, &irepository.Item{Key: k})
-	}
-	model.List = func() ([]*Profile, error) {
-		items, err := repo.List(collection)
-		if err != nil {
-			return nil, err
-		}
-		profiles := make([]*Profile, 0)
-		for _, item := range items {
-			profile := item.Value.(Profile)
-			profiles = append(profiles, &profile)
-		}
-		return profiles, nil
 	}
 	return model
 }

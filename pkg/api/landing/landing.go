@@ -13,6 +13,7 @@ func Connect(router *gin.Engine, prefix string, repo repository.Repo) {
 	view := views.New(model)
 	ctrl := controllers.New(model)
 
-	router.GET(prefix+"/get", view.Get)
+	router.GET("/l/:user/:landing", view.Get)
 	router.POST(prefix+"/new", ctrl.Create)
+	router.POST(prefix+"/add-card", ctrl.AddCard)
 }
