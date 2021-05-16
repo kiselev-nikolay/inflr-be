@@ -23,7 +23,7 @@ func getTestPlayer() *testhelper.Player {
 	views := views.New(m)
 
 	testplayer := testhelper.New(repo)
-	testplayer.Router.POST("/ctrl/new", ctrls.New)
+	testplayer.Router.POST("/ctrl/new", ctrls.Create)
 	testplayer.Router.POST("/ctrl/add-youtube", ctrls.AddYoutube)
 	testplayer.Router.GET("/view/get", views.Get)
 	return testplayer
@@ -33,7 +33,7 @@ func TestCtrlNew(t *testing.T) {
 	assert := assert.New(t)
 	testplayer := getTestPlayer()
 
-	code, res := testplayer.TestPost("/ctrl/new", controllers.NewReq{
+	code, res := testplayer.TestPost("/ctrl/new", controllers.CreateReq{
 		Name: "Hello",
 	})
 	assert.Equal(http.StatusOK, code)
@@ -48,7 +48,7 @@ func TestCtrlAddYoutube(t *testing.T) {
 	assert := assert.New(t)
 	testplayer := getTestPlayer()
 
-	code, res := testplayer.TestPost("/ctrl/new", controllers.NewReq{
+	code, res := testplayer.TestPost("/ctrl/new", controllers.CreateReq{
 		Name: "Hello",
 	})
 	assert.Equal(http.StatusOK, code)

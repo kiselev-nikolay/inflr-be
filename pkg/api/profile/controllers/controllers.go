@@ -19,16 +19,16 @@ type Ctrl struct {
 	Model *models.Model
 }
 
-type NewReq struct {
+type CreateReq struct {
 	Name string `json:"name" bind:"required"`
 }
 
-func (ctrl *Ctrl) New(g *gin.Context) {
+func (ctrl *Ctrl) Create(g *gin.Context) {
 	if !authware.RequiredLoginPassed(g) {
 		return
 	}
 	u := authware.GetUserFromContext(g)
-	body := &NewReq{}
+	body := &CreateReq{}
 	if err := g.BindJSON(body); err != nil {
 		apierrors.MissingRequiredData.Send(g)
 		return

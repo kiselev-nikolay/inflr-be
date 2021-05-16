@@ -2,9 +2,9 @@ package server
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/kiselev-nikolay/inflr-be/pkg/api/profile"
+	"github.com/kiselev-nikolay/inflr-be/pkg/authware"
 	"github.com/kiselev-nikolay/inflr-be/pkg/repository/memorystore"
-	"github.com/kiselev-nikolay/inflr-be/pkg/server/authdom"
-	"github.com/kiselev-nikolay/inflr-be/pkg/server/profiledom"
 )
 
 const (
@@ -27,8 +27,8 @@ func GetRouter(mode int) *gin.Engine {
 	repo.Connect()
 
 	reactNativePrefix := "/rnai"
-	authdom.Connect(router, reactNativePrefix+"/auth", repo, key)
-	profiledom.Connect(router, reactNativePrefix+"/profile", repo)
+	authware.Connect(router, reactNativePrefix+"/auth", repo, key)
+	profile.Connect(router, reactNativePrefix+"/profile", repo)
 
 	return router
 }
