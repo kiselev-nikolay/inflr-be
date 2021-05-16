@@ -18,19 +18,10 @@ func (ae *APIError) Send(g *gin.Context) {
 }
 
 var (
-	MissingRequiredData APIError
-	WrongData           APIError
-	AlreadyHave         APIError
-	CannotCreate        APIError
-	NotFound            APIError
-	IntegrationFail     APIError
-)
-
-func init() {
 	MissingRequiredData = APIError{http.StatusBadRequest, "missing required data"}
-	WrongData = APIError{http.StatusBadRequest, "wrong data"}
-	AlreadyHave = APIError{http.StatusBadRequest, "already have"}
-	CannotCreate = APIError{http.StatusInternalServerError, "cannot create"}
-	NotFound = APIError{http.StatusNotFound, "not found"}
-	IntegrationFail = APIError{http.StatusNotFound, "integration fail"}
-}
+	WrongData           = APIError{http.StatusBadRequest, "wrong data"}
+	AlreadyHave         = APIError{http.StatusBadRequest, "already have"}
+	CannotCreate        = APIError{http.StatusInternalServerError, "cannot create"}
+	NotFound            = APIError{http.StatusNotFound, "not found"}
+	IntegrationFail     = APIError{http.StatusNotFound, "integration fail"}
+)

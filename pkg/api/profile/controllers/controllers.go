@@ -1,4 +1,4 @@
-package profile
+package controllers
 
 import (
 	"net/http"
@@ -6,23 +6,24 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/kiselev-nikolay/inflr-be/pkg/api/apierrors"
+	"github.com/kiselev-nikolay/inflr-be/pkg/api/profile/models"
 	"github.com/kiselev-nikolay/inflr-be/pkg/authware"
 	"github.com/kiselev-nikolay/inflr-be/pkg/integrations/youtube"
 )
 
-type Controller struct {
-	Model *Model
+func New(model *models.Model) *Ctrl {
+	return &Ctrl{Model: model}
 }
 
-func NewController(model *Model) *Controller {
-	return &Controller{Model: model}
+type Ctrl struct {
+	Model *models.Model
 }
 
 type NewReq struct {
 	Name string `json:"name" bind:"required"`
 }
 
-func (ctrl *Controller) New(g *gin.Context) {
+func (ctrl *Ctrl) New(g *gin.Context) {
 	if !authware.RequiredLoginPassed(g) {
 		return
 	}
@@ -39,7 +40,7 @@ func (ctrl *Controller) New(g *gin.Context) {
 		return
 	}
 
-	p := &Profile{}
+	p := &models.Profile{}
 	p.Bio.Name = body.Name
 	err = ctrl.Model.Send(u.Login, p)
 	if err != nil {
@@ -55,7 +56,7 @@ type AddYoutubeReq struct {
 	Link string `json:"link" bind:"required"`
 }
 
-func (ctrl *Controller) AddYoutube(g *gin.Context) {
+func (ctrl *Ctrl) AddYoutube(g *gin.Context) {
 	if !authware.RequiredLoginPassed(g) {
 		return
 	}

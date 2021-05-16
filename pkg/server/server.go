@@ -8,8 +8,8 @@ import (
 )
 
 const (
-	ModeDev        = iota
-	ModeProduction = iota
+	ModeDev = iota
+	ModeProduction
 )
 
 const key = "Kh4Hy=bKRZ^fkq!RE7P8cBx=KLAb#nU^4Es$7srGHdH8@g79q2"

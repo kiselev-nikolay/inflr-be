@@ -6,7 +6,9 @@ import (
 	"testing"
 
 	"github.com/jarcoal/httpmock"
-	"github.com/kiselev-nikolay/inflr-be/pkg/api/profile"
+	"github.com/kiselev-nikolay/inflr-be/pkg/api/profile/controllers"
+	"github.com/kiselev-nikolay/inflr-be/pkg/api/profile/models"
+	"github.com/kiselev-nikolay/inflr-be/pkg/api/profile/views"
 	"github.com/kiselev-nikolay/inflr-be/pkg/repository/memorystore"
 	"github.com/kiselev-nikolay/inflr-be/pkg/tools/testhelper"
 	"github.com/stretchr/testify/assert"
@@ -16,14 +18,14 @@ func getTestPlayer() *testhelper.Player {
 	repo := &memorystore.MemoryStoreRepo{}
 	repo.Connect()
 
-	model := profile.NewModel(repo)
-	ctrl := profile.NewController(model)
-	view := profile.NewView(model)
+	m := models.New(repo)
+	ctrls := controllers.New(m)
+	views := views.New(m)
 
 	testplayer := testhelper.New(repo)
-	testplayer.Router.POST("/ctrl/new", ctrl.New)
-	testplayer.Router.POST("/ctrl/add-youtube", ctrl.AddYoutube)
-	testplayer.Router.GET("/view/get", view.Get)
+	testplayer.Router.POST("/ctrl/new", ctrls.New)
+	testplayer.Router.POST("/ctrl/add-youtube", ctrls.AddYoutube)
+	testplayer.Router.GET("/view/get", views.Get)
 	return testplayer
 }
 
@@ -31,7 +33,7 @@ func TestCtrlNew(t *testing.T) {
 	assert := assert.New(t)
 	testplayer := getTestPlayer()
 
-	code, res := testplayer.TestPost("/ctrl/new", profile.NewReq{
+	code, res := testplayer.TestPost("/ctrl/new", controllers.NewReq{
 		Name: "Hello",
 	})
 	assert.Equal(http.StatusOK, code)
@@ -46,7 +48,7 @@ func TestCtrlAddYoutube(t *testing.T) {
 	assert := assert.New(t)
 	testplayer := getTestPlayer()
 
-	code, res := testplayer.TestPost("/ctrl/new", profile.NewReq{
+	code, res := testplayer.TestPost("/ctrl/new", controllers.NewReq{
 		Name: "Hello",
 	})
 	assert.Equal(http.StatusOK, code)
@@ -59,7 +61,7 @@ func TestCtrlAddYoutube(t *testing.T) {
 	url := "https://www.googleapis.com/youtube/v3/channels?key=AIzaSyBQQ-zTp3e4o0GkJEbnnmH35hTMOSxsW_E&part=statistics&part=snippet&id=UC-lHJZR3Gqxm24_Vd_AJ5Yw"
 	httpmock.Activate()
 	httpmock.RegisterResponder("GET", url, httpmock.NewBytesResponder(200, file))
-	code, res = testplayer.TestPost("/ctrl/add-youtube", profile.AddYoutubeReq{
+	code, res = testplayer.TestPost("/ctrl/add-youtube", controllers.AddYoutubeReq{
 		Link: "https://www.youtube.com/channel/UC-lHJZR3Gqxm24_Vd_AJ5Yw",
 	})
 	httpmock.DeactivateAndReset()

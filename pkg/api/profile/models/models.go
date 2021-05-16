@@ -1,4 +1,4 @@
-package profile
+package models
 
 import (
 	"net/url"
@@ -8,6 +8,7 @@ import (
 	"github.com/kiselev-nikolay/inflr-be/pkg/integrations/youtube"
 	"github.com/kiselev-nikolay/inflr-be/pkg/repository"
 	irepository "github.com/kiselev-nikolay/inflr-be/pkg/repository/interfaces"
+	"github.com/kiselev-nikolay/inflr-be/pkg/tools/country"
 )
 
 const (
@@ -21,7 +22,7 @@ type Bio struct {
 	About        string
 	Links        []url.URL
 	Availability int
-	Country      Country
+	Country      country.Country
 }
 type Projects struct {
 	Youtube  map[string]youtube.YoutubeInfo
@@ -43,7 +44,7 @@ type Model struct {
 	List   func() ([]*Profile, error)
 }
 
-func NewModel(repo repository.Repo) *Model {
+func New(repo repository.Repo) *Model {
 	collection := "Profile"
 	model := &Model{}
 	model.Send = func(k string, v *Profile) error {

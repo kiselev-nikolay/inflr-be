@@ -1,10 +1,11 @@
-package profile
+package views
 
 import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/kiselev-nikolay/inflr-be/pkg/api/apierrors"
+	"github.com/kiselev-nikolay/inflr-be/pkg/api/profile/models"
 	"github.com/kiselev-nikolay/inflr-be/pkg/authware"
 	"github.com/kiselev-nikolay/inflr-be/pkg/integrations/telegram"
 	"github.com/kiselev-nikolay/inflr-be/pkg/integrations/tiktok"
@@ -12,10 +13,10 @@ import (
 )
 
 type View struct {
-	Model *Model
+	Model *models.Model
 }
 
-func NewView(model *Model) *View {
+func New(model *models.Model) *View {
 	return &View{Model: model}
 }
 
