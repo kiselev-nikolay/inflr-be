@@ -5,3 +5,5 @@ I opened the source code of the inflr.app because it did not pass the focus grou
 See [front-end repo](https://github.com/kiselev-nikolay/inflr-fe) (react native)
 
 What its all about? [See project page on my personal site](https://nikolai.works/inflrappv1)
+
+BTW any token you find in this repo already has restricted access.
