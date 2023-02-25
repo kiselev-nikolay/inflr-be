@@ -10,7 +10,7 @@ require (
 	github.com/jarcoal/httpmock v1.0.8
 	github.com/stretchr/testify v1.6.1
 	golang.org/x/crypto v0.0.0-20210220033148-5ea612d1eb83
-	golang.org/x/sys v0.0.0-20210426230700-d19ff857e887 // indirect
+	golang.org/x/sys v0.1.0 // indirect
 	google.golang.org/api v0.45.0
 	google.golang.org/grpc v1.37.0
 )
